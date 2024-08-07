@@ -1,22 +1,38 @@
 {
   "name": "simpleserverapp",
+  "productName": "simpleserverapp",
   "version": "1.0.0",
   "description": "App to start local server",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder build",
+    "dist": "electron-builder",
+    "setup": "electron-installer-windows --src dist/win-unpacked/ --dest dist/installers/"
   },
-  "author": "Anukul chand",
+  "author": "AChand",
   "license": "MIT",
   "dependencies": {
     "formidable": "^3.5.1",
     "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
     "os": "^0.1.2",
+    "quick-local-ip": "^1.0.7",
     "toastify-js": "^1.12.0"
   },
   "devDependencies": {
     "electron": "^31.3.1",
-    "quick-local-ip": "^1.0.7"
+    "electron-builder": "^24.13.3",
+    "electron-installer-windows": "^3.0.0"
+  },
+  "build": {
+    "appId": "com.try.simpleserverapp",
+    "win": {
+      "target": "nsis",
+      "icon": "assets/server.ico"
+    },
+    "nsis": {
+      "perMachine": true
+    }
   }
 }

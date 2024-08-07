@@ -5,7 +5,7 @@ const { IncomingForm } = require('formidable');
 const fs = require('fs');
 const os = require('os');
 const myip = require('quick-local-ip');
-const {app, BrowserWindow, Menu, ipcMain} = require('electron');
+const {app, BrowserWindow, Menu, ipcMain, dialog} = require('electron');
 
 process.env.NODE_ENV = 'production';
 
@@ -14,6 +14,7 @@ const isInDevMode = process.env.NODE_ENV !== 'production';
 
 let mainWindow;
 let aboutWindow;
+let directoryToUpload;
 
 function createEntryWindow() {
     mainWindow = new BrowserWindow({
@@ -101,7 +102,8 @@ ipcMain.on('server:start',(e,options) => {
 function startServer(e) {
     http.createServer(async function (req, res) {
         try {
-            const uploadDir = path.join(__dirname + '/uploads');
+            const uploadDir = path.join(directoryToUpload + '/uploads');
+            if(isInDevMode) console.log("dir is "+uploadDir);
             if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, '0777', true);
             const filterFunction = ({ name, originalFilename, mimetype }) => {
                 console.log(mimetype);
@@ -110,6 +112,7 @@ function startServer(e) {
             const customOptions = { uploadDir: uploadDir, keepExtensions: true, allowEmptyFiles: false, maxFileSize: 5 * 1024 * 1024 * 1024, multiples: true, filter: filterFunction };
             const form = new IncomingForm(customOptions);
             try {
+                if(isInDevMode) console.log("parsing request received");
                 await form.parse(req, (err, field, file) => {
                     if (err) throw err;
 
@@ -142,7 +145,8 @@ function startServer(e) {
       }).listen(8080);
     var localIp = getLocalMachineIp();
     console.log(localIp);
-    e.reply('server:started',localIp);
+    directoryToUpload = dialog.showOpenDialogSync({properties: ['openDirectory']});
+    e.reply('server:started',localIp,directoryToUpload);
 }
 
 function getLocalMachineIp() {

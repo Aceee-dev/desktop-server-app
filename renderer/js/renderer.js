@@ -7,9 +7,9 @@ function startServer(event) {
 }
 
 // When server is started, update UI elements and show URL
-ipcRenderer.on('server:started', (localipaddress) => {
+ipcRenderer.on('server:started', (localipaddress,directoryToUpload) => {
   console.log("Server has started");
-  serverUrlText.innerHTML = "Server started at port 8080, use URL "+localipaddress+":8080 in client app";
+  serverUrlText.innerHTML = "Server started at port 8080, <br> use URL "+localipaddress+":8080 in client app. <br> File will be uploaded to: <br>"+directoryToUpload;
   serverUrlText.classList.toggle('hidden');
 });
 
