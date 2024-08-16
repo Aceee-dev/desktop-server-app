@@ -6,7 +6,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "pack": "electron-builder build",
+    "pack": "electron-builder build --publish never",
     "dist": "electron-builder",
     "setup": "electron-installer-windows --src dist/win-unpacked/ --dest dist/installers/"
   },
