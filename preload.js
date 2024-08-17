@@ -20,3 +20,7 @@ contextBridge.exposeInMainWorld("ipcRenderer", {
 contextBridge.exposeInMainWorld("Toastify", {
   toast: (options) => Toastify(options).showToast(),
 });
+
+contextBridge.exposeInMainWorld("BuildMode", {
+  isInDevMode: () => process.env.NODE_ENV !== "production",
+});

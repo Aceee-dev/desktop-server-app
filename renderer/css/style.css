@@ -800,3 +800,7 @@ video {
 .focus\:ring-offset-2:focus {
   --tw-ring-offset-width: 2px;
 }
+
+.word-wrap-needed {
+  word-wrap: break-word;
+}

@@ -1,20 +1,38 @@
 const startServerButton = document.querySelector("#startButton");
 const serverUrlText = document.querySelector("#serverurl");
 
-function startServer(event) {
-  console.log("Starting server");
+let serverIsRunning = false;
+
+function handleServer(event) {
+  if (serverIsRunning) {
+    if (BuildMode.isInDevMode()) console.log("Stopping server");
+    ipcRenderer.send("server:stop", {});
+    return;
+  }
+  if (BuildMode.isInDevMode()) console.log("Starting server");
   ipcRenderer.send("server:start", {});
 }
 
-// When server is started, update UI elements and show URL
+// When server is started, update UI elements
 ipcRenderer.on("server:started", (localipaddress, directoryToUpload) => {
-  console.log("Server has started");
+  if (BuildMode.isInDevMode()) console.log("Server has started");
+  serverIsRunning = true;
   serverUrlText.innerHTML =
     "Server started at port 8080, <br> use URL " +
     localipaddress +
     ":8080 in client app. <br> File will be uploaded to: <br>" +
     directoryToUpload;
   serverUrlText.classList.toggle("hidden");
+  startServerButton.innerHTML = "Stop local server";
+});
+
+// When server is stopped, update UI elements
+ipcRenderer.on("server:stopped", () => {
+  if (BuildMode.isInDevMode()) console.log("Server has stopped");
+  serverIsRunning = false;
+  serverUrlText.innerHTML = "";
+  serverUrlText.classList.toggle("hidden");
+  startServerButton.innerHTML = "Start local server";
 });
 
 ipcRenderer.on("server:notifyuploadstatus", (status) => {
@@ -52,4 +70,4 @@ function alertError(message) {
 }
 
 // File select listener
-startServerButton.addEventListener("click", startServer);
+startServerButton.addEventListener("click", handleServer);

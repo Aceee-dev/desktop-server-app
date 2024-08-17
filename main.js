@@ -15,6 +15,9 @@ const isInDevMode = process.env.NODE_ENV !== "production";
 let mainWindow;
 let aboutWindow;
 let directoryToUpload;
+let server;
+let sockets = {},
+  socketIdcount = 0;
 
 function createEntryWindow() {
   mainWindow = new BrowserWindow({
@@ -35,6 +38,8 @@ function createEntryWindow() {
     mainWindow.webContents.openDevTools();
   }
   mainWindow.loadFile(path.join(__dirname, "./renderer/index.html"));
+  sockets = {};
+  socketIdcount = 0;
 }
 
 // About Window
@@ -99,10 +104,15 @@ ipcMain.on("server:start", (e, options) => {
   console.log("Started server");
 });
 
+ipcMain.on("server:stop", (e, options) => {
+  stopServer(e);
+  console.log("Stopped server");
+});
+
 function startServer(e) {
   var localIp = getLocalMachineIp();
   console.log(localIp);
-  http
+  server = http
     .createServer(async function (req, res) {
       try {
         const uploadDir = path.join(directoryToUpload + "/uploads");
@@ -153,10 +163,30 @@ function startServer(e) {
       }
     })
     .listen(8080, localIp);
+
+  server.on("connection", (socket) => {
+    var socketId = socketIdcount++;
+    sockets[socketId] = socket;
+    socket.on("close", () => {
+      delete sockets[socketId];
+    });
+  });
+
   directoryToUpload = dialog.showOpenDialogSync({
     properties: ["openDirectory"],
   });
   e.reply("server:started", localIp, directoryToUpload);
+}
+
+function stopServer(e) {
+  server.close(() => {
+    console.log("server closed");
+  });
+  // Destroy sockets.
+  for (var socketId in sockets) {
+    sockets[socketId].destroy();
+  }
+  e.reply("server:stopped");
 }
 
 function getLocalMachineIp() {
