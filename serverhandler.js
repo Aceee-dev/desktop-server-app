@@ -23,6 +23,12 @@ module.exports = {
     console.log(localIp);
     server = http
       .createServer(async function (req, res) {
+        const endPoint = req.url;
+        if (endPoint !== "/upload") {
+          res.writeHead(200, { "Content-Type": "text/html" });
+          res.end("Please check API endpoint");
+          return;
+        }
         try {
           const uploadDir = path.join(directoryToUpload + "/uploads");
           if (isInDevMode) console.log("dir is " + uploadDir);
