@@ -2,6 +2,7 @@ const startServerButton = document.querySelector("#startButton");
 const serverUrlText = document.querySelector("#serverurl");
 
 let serverIsRunning = false;
+let hotspotIsRunning = false;
 
 function handleServer(event) {
   if (serverIsRunning) {
@@ -43,15 +44,30 @@ ipcRenderer.on("server:notifyuploadstatus", (status) => {
   }
 });
 
+// When hotspot status is updated, update status
+ipcRenderer.on("hotspot:status", (status) => {
+  if (status) {
+    hotspotbtn.innerHTML= "Stop Hotspot"
+    hotspotIsRunning = true;
+    alertSuccess("Hotspot Success");
+  } else {
+     hotspotbtn.innerHTML= "Start Hotspot"
+     hotspotIsRunning = false;
+    alertError("Hotspot failed");
+  }
+});
+
+
 function alertSuccess(message) {
   Toastify.toast({
     text: message,
-    duration: 5000,
     close: false,
+    duration: 5000,
     style: {
       background: "green",
       color: "white",
       textAlign: "center",
+      position: "fixed",
     },
   });
 }
@@ -65,9 +81,23 @@ function alertError(message) {
       background: "red",
       color: "white",
       textAlign: "center",
+      position: "fixed",
     },
   });
 }
 
-// File select listener
 startServerButton.addEventListener("click", handleServer);
+document.getElementById('hotspotbtn').addEventListener('click', () => {
+  if(hotspotIsRunning) {
+    ipcRenderer.send("hotspot:stop");
+    return;
+  }
+  const ssid = document.getElementById('ssid').value;
+  const password = document.getElementById('password').value;
+  // Create JSON object with SSID and password
+  const hotspotData = {
+    ssid: ssid,
+    password: password
+  };
+  ipcRenderer.send("hotspot:start", JSON.stringify(hotspotData));
+});

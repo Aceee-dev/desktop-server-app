@@ -1,6 +1,7 @@
 const path = require("path");
 const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 const serverhandler = require("./serverhandler.js");
+const { startHotspot, stopHotspot } = require('./hotspothandler.js');
 
 process.env.NODE_ENV = "production";
 
@@ -13,13 +14,14 @@ let aboutWindow;
 function createEntryWindow() {
   mainWindow = new BrowserWindow({
     title: "Server App",
-    width: isInDevMode ? 1100 : 500,
-    height: 600,
+    width: isInDevMode ? 1100 : 800,
+    height: 800,
     icon: `${__dirname}/assets/server.png`,
     resizable: isInDevMode,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
+      enableRemoteModule: true,
       preload: path.join(__dirname, "preload.js"),
     },
   });
@@ -97,6 +99,22 @@ ipcMain.on("server:start", (e, options) => {
 ipcMain.on("server:stop", (e, options) => {
   serverhandler.stopServer(e);
   console.log("Stopped server");
+});
+
+ipcMain.on('hotspot:start', (event, data) => {
+  // Parse the JSON string
+  const hotspotData = JSON.parse(data);
+
+  // Extract SSID and password
+  const ssid = hotspotData.ssid;
+  const password = hotspotData.password;
+  console.log("Hotspot req recieved "+ssid+" pwd = "+password);
+  startHotspot(event, ssid, password);
+});
+
+ipcMain.on('hotspot:stop', (event) => {
+  console.log("stop req received");
+  stopHotspot(event);
 });
 
 // Only required for macOS

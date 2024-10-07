@@ -16,24 +16,39 @@
     <title>ServerApp</title>
   </head>
   <body class="bg-teal-700">
-    <div
-      class="max-w-xl m-auto h-screen flex flex-col align-center justify-center"
-    >
-      <div
-        class="flex flex-col w-full items-center justify-center bg-grey-lighter"
-      >
-        <label
-          class="w-80 flex flex-col items-center px-4 py-7 bg-white text-gray-500 rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:text-teal-800"
-        >
-          <img src="./images/server.png" width="64" height="64" />
-          <button class="mt-2 leading-normal" id="startButton">
-            Start local server
-          </button>
-          <div
-            id="serverurl"
-            class="hidden text-center word-wrap-needed w-80"
-          ></div>
-        </label>
+    <div class="container">
+      <div class="content">
+        <img src="./images/server.png" width="64" height="64" alt="Server Icon" />
+        
+        <button class="btn-primary mt-4" id="startButton">
+          Start local server
+        </button>
+        
+        <button class="btn-secondary mt-4" id="hotspotbtn">
+          Start Hotspot
+        </button>
+
+        <div id="serverurl" class="hidden text-center word-wrap-needed w-80 mt-4"></div>
+
+        <div class="mt-4 w-full">
+          <label class="label">SSID:</label>
+          <input
+            type="text"
+            id="ssid"
+            class="input-box"
+            placeholder="Enter SSID"
+          />
+        </div>
+
+        <div class="mt-4 w-full">
+          <label class="label">Password:</label>
+          <input
+            type="password"
+            id="password"
+            class="input-box"
+            placeholder="Enter password"
+          />
+        </div>
       </div>
     </div>
   </body>

@@ -4,6 +4,8 @@ const http = require("http");
 const { IncomingForm } = require("formidable");
 const { dialog } = require("electron");
 const fs = require("fs");
+const sudo = require('sudo-prompt');  // Import electron-sudo for elevated privileges
+const { exec } = require('child_process');
 
 const isInDevMode = process.env.NODE_ENV !== "production";
 
@@ -12,6 +14,23 @@ let server;
 let sockets = {},
   socketIdcount = 0;
 
+function addFirewallRuleWithSudo(port) {
+  // Define the netsh command to add a firewall rule for inbound traffic on the specified port
+  const command = `netsh advfirewall firewall add rule name="Electron" dir=in action=allow protocol=TCP localport=${port} profile=any`;
+  const options = {
+    name: 'SimpleServerApp'  // This will appear in the permission prompt
+  };
+
+  // Execute the command with elevated privileges using sudo-prompt
+  sudo.exec(command, options, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error adding firewall rule with sudo: ${stderr}`);
+      return;
+    }
+    console.log(`Firewall rule added successfully with sudo: ${stdout}`);
+  });
+}
+
 function getLocalMachineIp() {
   //getting ip4 network address of local system
   return myip.getLocalIP4().toString();
@@ -19,6 +38,7 @@ function getLocalMachineIp() {
 
 module.exports = {
   startServer: function startServer(e) {
+    addFirewallRuleWithSudo(8080);
     var localIp = getLocalMachineIp();
     console.log(localIp);
     server = http

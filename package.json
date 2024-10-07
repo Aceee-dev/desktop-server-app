@@ -2,37 +2,57 @@
   "name": "simpleserverapp",
   "productName": "simpleserverapp",
   "version": "1.0.0",
-  "description": "App to start local server",
+  "description": "simpleserverapp",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "pack": "electron-builder build --publish never",
+    "pack": "electron-builder -p never --win --publish never",
     "dist": "electron-builder",
     "setup": "electron-installer-windows --src dist/win-unpacked/ --dest dist/installers/"
   },
   "author": "AChand",
   "license": "MIT",
   "dependencies": {
+    "electron-sudo": "^4.0.12",
     "formidable": "^3.5.1",
     "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
     "os": "^0.1.2",
     "quick-local-ip": "^1.0.7",
+    "sudo-prompt": "^9.2.1",
     "toastify-js": "^1.12.0"
   },
   "devDependencies": {
     "electron": "^31.3.1",
-    "electron-builder": "^24.13.3",
+    "electron-builder": "^25.0.5",
     "electron-installer-windows": "^3.0.0"
   },
   "build": {
     "appId": "com.try.simpleserverapp",
+    "productName": "Simpleserverapp",
+    "extraMetadata": {
+      "version": "1.0.0",
+      "fileDescription": "simpleserverapp"
+    },
+    "extraResources": [
+      {  
+        "filter": ["*.ps1"]
+      }
+    ],
     "win": {
+      "publisherName": "No Info",
+      "publish": [
+        "github"
+      ],
       "target": "nsis",
-      "icon": "assets/server.ico"
+      "icon": "assets/server.ico",
+      "requestedExecutionLevel": "requireAdministrator",
+      "signAndEditExecutable": true
     },
     "nsis": {
-      "perMachine": true
+      "perMachine": false,
+      "allowElevation": true,
+      "createDesktopShortcut": true
     }
   }
 }
