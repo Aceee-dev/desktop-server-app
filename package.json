@@ -2,11 +2,11 @@
   "name": "simpleserverapp",
   "productName": "simpleserverapp",
   "version": "1.0.0",
-  "description": "simpleserverapp",
+  "description": "App to start local server",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "pack": "electron-builder -p never --win --publish never",
+    "pack": "electron-builder build --publish never",
     "dist": "electron-builder",
     "setup": "electron-installer-windows --src dist/win-unpacked/ --dest dist/installers/"
   },
